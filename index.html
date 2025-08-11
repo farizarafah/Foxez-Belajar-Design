@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Gallery Tutorial Foxez Studio</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  body { background-color: #121212; color: #fff; font-family:Helvetica, sans-serif; }
+  header { background-color: #ff6600; }
+  nav a { color: white; transition: color 0.3s; }
+  nav a:hover { color: #ffd699; }
+  .label-beginner { background-color: #22c55e; color: white; padding: 2px 8px; border-radius: 5px; font-size: 12px; }
+  .label-intermediate { background-color: #b76500; color: white; padding: 2px 8px; border-radius: 5px; font-size: 12px; }
+  .label-expert { background-color: #dc2626; color: white; padding: 2px 8px; border-radius: 5px; font-size: 12px; }
+  .filter-btn {
+    background-color: #636363f1; border: none; padding: 8px 12px; border-radius: 6px; margin: 0 5px 10px 0; cursor: pointer; transition: background-color 0.3s;
+  }
+  .filter-btn:hover, .filter-btn.active {
+    background-color: #e65c00;
+  }
+  .grid-container {
+    column-count: 3; column-gap: 1rem;
+  }
+  @media (max-width: 1024px) {
+    .grid-container {
+      column-count: 2;
+    }
+  }
+  @media (max-width: 640px) {
+    .grid-container {
+      column-count: 1;
+    }
+  }
+  .grid-item {
+    background-color: #1e1e1e;
+    margin-bottom: 1rem;
+    border-radius: 8px;
+    overflow: hidden;
+    break-inside: avoid;
+    box-shadow: 0 2px 8px rgb(0 0 0 / 0.7);
+    transition: transform 0.2s ease;
+    cursor: pointer;
+  }
+  .grid-item:hover {
+    transform: translateY(-5px);
+  }
+  .grid-item img {
+    width: 100%;
+    display: block;
+    border-bottom: 1px solid #333;
+  }
+  .grid-item-content {
+    padding: 12px 16px;
+  }
+  .grid-item-title {
+    margin-top: 8px;
+    font-weight: 700;
+    font-size: 1.125rem;
+  }
+  .grid-item-category {
+    margin-top: 4px;
+    font-size: 0.875rem;
+    color: #bbb;
+  }
+
+  /* Modal styles */
+  .modal-bg {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    inset: 0;
+    background: rgba(0,0,0,0.75);
+    backdrop-filter: blur(3px);
+    justify-content: center;
+    align-items: center;
+  }
+  .modal-bg.active {
+    display: flex;
+  }
+  .modal-content {
+    background: #222;
+    border-radius: 10px;
+    max-width: 900px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: 20px;
+    box-sizing: border-box;
+  }
+  .modal-close {
+    float: right;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #fff;
+    cursor: pointer;
+  }
+  .modal-video {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+  }
+  .modal-title {
+    margin-top: 15px;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #ffa500;
+  }
+  .modal-description {
+    margin: 10px 0 20px;
+    color: #ccc;
+  }
+  .modal-btn {
+    background: #ff6600;
+    color: white;
+    padding: 10px 18px;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s;
+    text-decoration: none;
+    display: inline-block;
+  }
+  .modal-btn:hover {
+    background: #e65c00;
+  }
+</style>
+</head>
+<body>
+
+<header class="sticky top-0 z-50">
+  <nav class="flex items-center justify-between max-w-7xl mx-auto px-6 py-4 bg-orange-600">
+    <div class="text-2xl font-bold text-white">Foxez Studio</div>
+    <div class="hidden md:flex space-x-6">
+      <a href="#" class="hover:text-yellow-300">Download Asset Gratis</a>
+      <a href="#" class="hover:text-yellow-300">Kelas Premium</a>
+      <a href="#" class="hover:text-yellow-300">Inspirasi</a>
+      <a href="#" class="hover:text-yellow-300">Hubungi Kami</a>
+    </div>
+    <button id="menu-btn" class="md:hidden focus:outline-none">
+      <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+        viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16" /></svg>
+    </button>
+  </nav>
+  <div id="mobile-menu" class="hidden flex flex-col bg-orange-600 px-6 py-4 space-y-4 md:hidden">
+    <a href="#" class="text-white hover:text-yellow-300">Download Asset Gratis</a>
+    <a href="#" class="text-white hover:text-yellow-300">Kelas Premium</a>
+    <a href="#" class="text-white hover:text-yellow-300">Inspirasi</a>
+    <a href="#" class="text-white hover:text-yellow-300">Hubungi Kami</a>
+  </div>
+</header>
+
+<main class="max-w-7xl mx-auto px-6 py-8">
+  <div class="mb-6">
+    <button class="filter-btn active" data-filter="all">Semua</button>
+    <button class="filter-btn" data-filter="Photoshop"><img src="icon1.png" alt="Photoshop" class="inline w-5 h-5 mr-1" /> Photoshop </button>
+    <button class="filter-btn" data-filter="Illustrator"><img src="icon2.png" alt="Photoshop" class="inline w-5 h-5 mr-1" /> Illustrator</button>
+    <button class="filter-btn" data-filter="AfterEffects"><img src="icon1.png" alt="Photoshop" class="inline w-5 h-5 mr-1" /> After Effects</button>
+  </div>
+
+  <div id="grid" class="grid-container"></div>
+</main>
+
+<!-- Modal -->
+<div id="modal" class="modal-bg" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+  <div class="modal-content">
+    <button id="modal-close" class="modal-close" aria-label="Close modal">&times;</button>
+    <iframe id="modal-video" class="modal-video" src="" frameborder="0" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe>
+    <h2 id="modal-title" class="modal-title"></h2>
+    <p id="modal-description" class="modal-description"></p>
+    <a id="modal-youtube-btn" href="#" target="_blank" rel="noopener noreferrer" class="modal-btn">Nonton di YouTube</a>
+  </div>
+</div>
+
+<script>
+  // Hamburger menu toggle
+  const menuBtn = document.getElementById('menu-btn');
+  const mobileMenu = document.getElementById('mobile-menu');
+  menuBtn.addEventListener('click', () => {
+    mobileMenu.classList.toggle('hidden');
+  });
+
+  // Data tutorials (tambahkan description dan youtube link)
+  const tutorials = [
+    {
+      title: "Tutorial Photoshop 1",
+      category: "Photoshop",
+      level: "Beginner",
+      img: "1.png",
+      description: "Belajar dasar Photoshop untuk pemula, termasuk tools dan layer.",
+      youtubeId: "dQw4w9WgXcQ"
+    },
+    {
+      title: "Tutorial Photoshop 2",
+      category: "Photoshop",
+      level: "Expert",
+      img: "2.png",
+      description: "Teknik manipulasi foto tingkat lanjut menggunakan Photoshop.",
+      youtubeId: "Cn55vBe5zZk"
+    },
+    {
+      title: "Tutorial Illustrator 1",
+      category: "Illustrator",
+      level: "Intermediate",
+      img: "3.png",
+      description: "Membuat ilustrasi vector modern dengan Adobe Illustrator.",
+      youtubeId: "3JZ_D3ELwOQ"
+    },
+    {
+      title: "Tutorial Illustrator 2",
+      category: "Illustrator",
+      level: "Beginner",
+      img: "4.png",
+      description: "Dasar penggunaan Adobe Illustrator untuk pemula.",
+      youtubeId: "Cn55vBe5zZk"
+    },
+    {
+      title: "Tutorial After Effects 1",
+      category: "AfterEffects",
+      level: "Intermediate",
+      img: "5.jpg",
+      description: "Membuat animasi motion graphic dengan After Effects.",
+      youtubeId: "V-_O7nl0Ii0"
+    },
+    {
+      title: "Tutorial After Effects 2",
+      category: "AfterEffects",
+      level: "Expert",
+      img: "6.jpg",
+      description: "Teknik efek visual lanjutan menggunakan After Effects.",
+      youtubeId: "RgKAFK5djSk"
+    }
+  ];
+
+  const grid = document.getElementById('grid');
+  const filterButtons = document.querySelectorAll('.filter-btn');
+
+  function renderGrid(filter) {
+    grid.innerHTML = '';
+    const filtered = filter === 'all' ? tutorials : tutorials.filter(t => t.category === filter);
+    filtered.forEach(t => {
+      let labelClass = '';
+      if (t.level === 'Beginner') labelClass = 'label-beginner';
+      else if (t.level === 'Intermediate') labelClass = 'label-intermediate';
+      else if (t.level === 'Expert') labelClass = 'label-expert';
+
+      const card = document.createElement('div');
+      card.className = 'grid-item';
+      card.setAttribute('tabindex', '0'); // supaya bisa diakses keyboard
+      card.innerHTML = `
+        <img src="${t.img}" alt="${t.title}">
+        <div class="grid-item-content">
+          <span class="${labelClass}">${t.level}</span>
+          <div class="grid-item-title">${t.title}</div>
+          <div class="grid-item-category">${t.category}</div>
+        </div>
+      `;
+
+      // Event klik card buka modal
+      card.addEventListener('click', () => openModal(t));
+      card.addEventListener('keypress', e => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          openModal(t);
+        }
+      });
+
+      grid.appendChild(card);
+    });
+  }
+
+  function openModal(tutorial) {
+    const modal = document.getElementById('modal');
+    const video = document.getElementById('modal-video');
+    const title = document.getElementById('modal-title');
+    const desc = document.getElementById('modal-description');
+    const btn = document.getElementById('modal-youtube-btn');
+
+    video.src = `https://www.youtube.com/embed/${tutorial.youtubeId}?autoplay=1`;
+    title.textContent = tutorial.title;
+    desc.textContent = tutorial.description;
+    btn.href = `https://www.youtube.com/watch?v=${tutorial.youtubeId}`;
+
+    modal.classList.add('active');
+  }
+
+  function closeModal() {
+    const modal = document.getElementById('modal');
+    const video = document.getElementById('modal-video');
+    modal.classList.remove('active');
+    video.src = ""; // stop video
+  }
+
+  // Close modal tombol & klik luar modal
+  document.getElementById('modal-close').addEventListener('click', closeModal);
+  document.getElementById('modal').addEventListener('click', e => {
+    if (e.target === e.currentTarget) closeModal();
+  });
+
+  // Render awal & filter btn event
+  renderGrid('all');
+  filterButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      filterButtons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      renderGrid(btn.getAttribute('data-filter'));
+    });
+  });
+</script>
+
+</body>
+</html>
